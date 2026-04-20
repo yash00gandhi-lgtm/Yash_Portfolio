@@ -131,7 +131,15 @@ body:hover #cur{transform:translate(-50%,-50%) scale(1);}
   cursor:default;
   pointer-events:none; /* 🔥 IMPORTANT */
 }
-.pj-card::after{content:'';position:absolute;inset:0;background:rgba(255,255,255,0.04);opacity:0;transition:opacity .3s;}
+.pj-card::after{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:rgba(255,255,255,0.04);
+  opacity:0;
+  transition:opacity .3s;
+  pointer-events:none; /* 🔥 MUST */
+}
 .pj-card:hover{transform:translateY(-4px);}
 .pj-card:hover::after{opacity:1;}
 .pj-n{font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(255,255,255,0.2);margin-bottom:16px;letter-spacing:2px;}
