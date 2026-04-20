@@ -8,7 +8,15 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:'Syne',sans-serif;cursor:none;}
-#c{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;}
+#c{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  z-index:0;
+  pointer-events:none;
+}
 
 /* CURSOR */
 #cur{position:fixed;width:14px;height:14px;background:#fff;border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);mix-blend-mode:difference;transition:transform .15s;}
