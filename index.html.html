@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Yash Gandhi — Backend Developer</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:'Syne',sans-serif;cursor:none;}
+#c{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;}
+
+/* CURSOR */
+#cur{position:fixed;width:14px;height:14px;background:#fff;border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);mix-blend-mode:difference;transition:transform .15s;}
+#cur2{position:fixed;width:40px;height:40px;border:1.5px solid rgba(255,255,255,0.4);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:all .08s linear;}
+body:hover #cur{transform:translate(-50%,-50%) scale(1);}
+
+/* UI OVERLAY */
+#ui{position:fixed;top:0;left:0;width:100%;height:100%;z-index:10;pointer-events:none;}
+
+/* NAV */
+#nav{position:fixed;top:0;left:0;right:0;z-index:20;display:flex;justify-content:space-between;align-items:center;padding:28px 52px;pointer-events:all;}
+.logo{font-family:'Syne',sans-serif;font-weight:800;font-size:20px;color:#fff;letter-spacing:3px;opacity:0;animation:fadeIn 1s 0.5s forwards;}
+.nav-r{display:flex;gap:32px;align-items:center;opacity:0;animation:fadeIn 1s 0.8s forwards;}
+.nav-r a{color:rgba(255,255,255,0.5);text-decoration:none;font-size:12px;letter-spacing:2px;text-transform:uppercase;transition:color .3s;font-family:'JetBrains Mono',monospace;}
+.nav-r a:hover{color:#fff;}
+.hire-btn{padding:10px 28px;border:1px solid rgba(255,255,255,0.3);color:#fff;background:rgba(255,255,255,0.06);font-size:11px;letter-spacing:2px;font-family:'JetBrains Mono',monospace;cursor:pointer;transition:all .3s;text-decoration:none;}
+.hire-btn:hover{background:rgba(255,255,255,0.15);border-color:#fff;}
+
+/* SECTION PANELS */
+.panel{position:fixed;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:100px 60px 60px;opacity:0;pointer-events:none;transition:opacity .8s ease;z-index:15;}
+.panel.active{opacity:1;pointer-events:all;}
+
+/* HOME */
+#p-home .eyebrow{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:5px;color:rgba(255,255,255,0.4);text-transform:uppercase;margin-bottom:24px;transform:translateY(20px);opacity:0;transition:all .8s .2s;}
+#p-home.active .eyebrow{transform:translateY(0);opacity:1;}
+#p-home h1{font-size:clamp(64px,10vw,130px);font-weight:800;line-height:.95;letter-spacing:-4px;color:#fff;transform:translateY(40px);opacity:0;transition:all .9s .3s;}
+#p-home.active h1{transform:translateY(0);opacity:1;}
+#p-home h1 em{font-style:normal;color:transparent;-webkit-text-stroke:1px rgba(255,255,255,0.4);}
+#p-home .sub{font-size:16px;color:rgba(255,255,255,0.4);margin-top:24px;max-width:480px;line-height:1.7;transform:translateY(20px);opacity:0;transition:all .8s .5s;font-weight:400;}
+#p-home.active .sub{transform:translateY(0);opacity:1;}
+.cta-row{display:flex;gap:16px;margin-top:48px;justify-content:center;transform:translateY(20px);opacity:0;transition:all .8s .7s;}
+#p-home.active .cta-row{transform:translateY(0);opacity:1;}
+.cta-main{padding:16px 52px;background:#fff;color:#000;font-weight:700;font-size:13px;letter-spacing:2px;text-transform:uppercase;border:none;cursor:pointer;transition:all .3s;font-family:'Syne',sans-serif;}
+.cta-main:hover{background:transparent;color:#fff;outline:1px solid #fff;}
+.cta-sec{padding:16px 32px;background:transparent;color:rgba(255,255,255,0.6);font-size:13px;letter-spacing:2px;text-transform:uppercase;border:1px solid rgba(255,255,255,0.2);cursor:pointer;transition:all .3s;font-family:'Syne',sans-serif;}
+.cta-sec:hover{border-color:#fff;color:#fff;}
+
+/* SCROLL HINT */
+.scroll-hint{position:fixed;bottom:36px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:10px;z-index:20;opacity:0;animation:fadeIn 1s 1.5s forwards;}
+.scroll-hint span{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:4px;color:rgba(255,255,255,0.3);text-transform:uppercase;}
+.scroll-line{width:1px;height:50px;background:linear-gradient(to bottom,rgba(255,255,255,0.4),transparent);animation:scrollDrop 2s infinite;}
+@keyframes scrollDrop{0%{transform:scaleY(0);transform-origin:top;}50%{transform:scaleY(1);transform-origin:top;}51%{transform:scaleY(1);transform-origin:bottom;}100%{transform:scaleY(0);transform-origin:bottom;}}
+
+/* SECTION NAV DOTS */
+#dots{position:fixed;right:40px;top:50%;transform:translateY(-50%);z-index:20;display:flex;flex-direction:column;gap:14px;pointer-events:all;}
+.dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.2);cursor:pointer;transition:all .3s;position:relative;}
+.dot.on{background:#fff;transform:scale(1.5);}
+.dot:hover{background:rgba(255,255,255,0.6);}
+.dot-label{position:absolute;right:18px;top:50%;transform:translateY(-50%);font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:2px;color:#fff;white-space:nowrap;opacity:0;transition:opacity .2s;}
+.dot:hover .dot-label{opacity:1;}
+
+/* SECTION NUMBER */
+.sec-num{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:4px;color:rgba(255,255,255,0.25);margin-bottom:16px;}
+
+/* SECTION TITLE STYLE */
+.s-title{font-size:clamp(36px,6vw,72px);font-weight:800;color:#fff;line-height:1;letter-spacing:-2px;margin-bottom:32px;}
+.s-title span{color:transparent;-webkit-text-stroke:1px rgba(255,255,255,0.3);}
+
+/* ABOUT */
+#p-about .about-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;max-width:900px;text-align:left;margin-top:16px;}
+.about-left p{font-size:17px;line-height:1.8;color:rgba(255,255,255,0.65);font-weight:400;}
+.about-left p strong{color:#fff;font-weight:700;}
+.about-right{display:flex;flex-direction:column;gap:16px;}
+.stat-row{padding:20px 24px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.02);display:flex;justify-content:space-between;align-items:center;}
+.stat-row .sn{font-family:'JetBrains Mono',monospace;font-size:36px;font-weight:700;color:#fff;}
+.stat-row .sl{font-size:12px;color:rgba(255,255,255,0.4);letter-spacing:2px;text-transform:uppercase;}
+
+/* SKILLS */
+#p-skills .sk-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;max-width:900px;width:100%;margin-top:16px;}
+.sk-item{padding:28px 24px;border:1px solid rgba(255,255,255,0.07);background:rgba(255,255,255,0.02);text-align:left;transition:all .4s;position:relative;overflow:hidden;}
+.sk-item::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:#fff;transform:scaleX(0);transform-origin:left;transition:transform .4s;}
+.sk-item:hover{background:rgba(255,255,255,0.06);}
+.sk-item:hover::before{transform:scaleX(1);}
+.sk-icon{font-size:24px;margin-bottom:12px;}
+.sk-name{font-size:15px;font-weight:700;color:#fff;margin-bottom:6px;letter-spacing:-.3px;}
+.sk-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;}
+.sk-tag{font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(255,255,255,0.4);padding:3px 10px;border:1px solid rgba(255,255,255,0.1);}
+.sk-bar{height:2px;background:rgba(255,255,255,0.08);margin-top:16px;position:relative;}
+.sk-fill{height:100%;background:#fff;width:0;transition:width 1.4s cubic-bezier(.4,0,.2,1);}
+
+/* PROJECTS */
+#p-projects .pj-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;max-width:1000px;width:100%;margin-top:16px;}
+.pj-card{padding:32px 28px;border:1px solid rgba(255,255,255,0.07);background:rgba(255,255,255,0.02);text-align:left;transition:all .4s;position:relative;overflow:hidden;cursor:pointer;}
+.pj-card::after{content:'';position:absolute;inset:0;background:rgba(255,255,255,0.04);opacity:0;transition:opacity .3s;}
+.pj-card:hover{transform:translateY(-4px);}
+.pj-card:hover::after{opacity:1;}
+.pj-n{font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(255,255,255,0.2);margin-bottom:16px;letter-spacing:2px;}
+.pj-name{font-size:18px;font-weight:800;color:#fff;margin-bottom:12px;line-height:1.2;letter-spacing:-.4px;}
+.pj-desc{font-size:13px;color:rgba(255,255,255,0.45);line-height:1.7;margin-bottom:20px;}
+.pj-stack{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px;}
+.pj-t{font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(255,255,255,0.4);padding:3px 10px;border:1px solid rgba(255,255,255,0.1);}
+.pj-links{display:flex;gap:10px;}
+.pj-link{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1px;padding:8px 18px;border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.6);text-decoration:none;transition:all .3s;}
+.pj-link:hover{border-color:#fff;color:#fff;background:rgba(255,255,255,0.05);}
+
+/* CONTACT */
+#p-contact .ct-inner{max-width:700px;width:100%;}
+#p-contact .big-email{font-size:clamp(20px,3.5vw,42px);font-weight:800;color:#fff;margin:32px 0;letter-spacing:-1px;word-break:break-all;}
+#p-contact .big-email a{color:#fff;text-decoration:none;border-bottom:1px solid rgba(255,255,255,0.2);transition:border-color .3s;}
+#p-contact .big-email a:hover{border-color:#fff;}
+.ct-row{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-top:8px;}
+.ct-card{padding:20px 32px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.03);text-decoration:none;transition:all .3s;text-align:center;}
+.ct-card:hover{border-color:#fff;background:rgba(255,255,255,0.07);}
+.ct-card .ct-l{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:3px;color:rgba(255,255,255,0.3);text-transform:uppercase;margin-bottom:6px;}
+.ct-card .ct-v{font-size:14px;color:#fff;font-weight:700;}
+.send-btn{margin-top:36px;padding:18px 64px;background:#fff;color:#000;font-family:'Syne',sans-serif;font-weight:800;font-size:13px;letter-spacing:2px;text-transform:uppercase;border:none;cursor:pointer;transition:all .3s;}
+.send-btn:hover{background:rgba(255,255,255,0.85);transform:translateY(-2px);}
+
+/* ANIMATIONS */
+@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+.fade-up{transform:translateY(30px);opacity:0;transition:all .7s;}
+.panel.active .fade-up{transform:translateY(0);opacity:1;}
+.panel.active .fade-up:nth-child(2){transition-delay:.1s;}
+.panel.active .fade-up:nth-child(3){transition-delay:.2s;}
+.panel.active .fade-up:nth-child(4){transition-delay:.3s;}
+.panel.active .fade-up:nth-child(5){transition-delay:.4s;}
+
+/* PROGRESS BAR */
+#progress{position:fixed;top:0;left:0;height:2px;background:#fff;z-index:100;width:0%;transition:width .3s;}
+
+/* SECTION INDICATOR */
+#sec-ind{position:fixed;bottom:36px;left:52px;z-index:20;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:3px;color:rgba(255,255,255,0.25);opacity:0;animation:fadeIn 1s 1.5s forwards;}
+
+@media(max-width:768px){
+  #nav{padding:20px 24px;}
+  .panel{padding:90px 24px 60px;}
+  #p-about .about-grid{grid-template-columns:1fr;}
+  #p-skills .sk-grid{grid-template-columns:1fr 1fr;}
+  #p-projects .pj-grid{grid-template-columns:1fr;}
+  #dots{display:none;}
+  #p-home h1{font-size:clamp(48px,12vw,80px);}
+}
+</style>
+</head>
+<body>
+
+<div id="cur"></div>
+<div id="cur2"></div>
+<div id="progress"></div>
+<canvas id="c"></canvas>
+
+<nav id="nav">
+  <div class="logo">YASH GANDHI</div>
+  <div class="nav-r">
+    <a href="#" onclick="goTo(1);return false;">About</a>
+    <a href="#" onclick="goTo(2);return false;">Skills</a>
+    <a href="#" onclick="goTo(3);return false;">Projects</a>
+    <a href="mailto:yash00gandhi@gmail.com" class="hire-btn">Hire Me</a>
+  </div>
+</nav>
+
+<!-- DOTS -->
+<div id="dots">
+  <div class="dot on" onclick="goTo(0)"><span class="dot-label">Home</span></div>
+  <div class="dot" onclick="goTo(1)"><span class="dot-label">About</span></div>
+  <div class="dot" onclick="goTo(2)"><span class="dot-label">Skills</span></div>
+  <div class="dot" onclick="goTo(3)"><span class="dot-label">Projects</span></div>
+  <div class="dot" onclick="goTo(4)"><span class="dot-label">Contact</span></div>
+</div>
+
+<div id="sec-ind">01 / 05</div>
+
+<!-- HOME -->
+<div class="panel active" id="p-home">
+  <div class="eyebrow">Backend Developer · Kanpur, India</div>
+  <h1>YASH<br><em>GANDHI</em></h1>
+  <p class="sub">Building scalable APIs, AI-integrated systems, and production-ready platforms with Django & DRF.</p>
+  <div class="cta-row">
+    <button class="cta-main" onclick="goTo(3)">View My Work</button>
+    <button class="cta-sec" onclick="goTo(4)">Get In Touch ↗</button>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<div class="panel" id="p-about">
+  <div class="sec-num fade-up">01 — ABOUT</div>
+  <div class="s-title fade-up">Who I <span>Am</span></div>
+  <div class="about-grid fade-up">
+    <div class="about-left">
+      <p>I'm a <strong>Backend Developer</strong> based in Kanpur, India, specializing in <strong>Django & Django REST Framework</strong>. I build production-ready systems that actually ship — from AI-powered tools to payment platforms.</p>
+      <br>
+      <p>Currently pursuing <strong>BCA at Integral University</strong> (2024–2027) while shipping real products and hunting my first international freelance clients.</p>
+      <br>
+      <p style="font-family:'JetBrains Mono',monospace;font-size:12px;color:rgba(255,255,255,0.3);">yash00gandhi@gmail.com · +91 72380 02289</p>
+    </div>
+    <div class="about-right">
+      <div class="stat-row">
+        <span class="sn">10+</span><span class="sl">REST APIs Built</span>
+      </div>
+      <div class="stat-row">
+        <span class="sn">3</span><span class="sl">Live Projects</span>
+      </div>
+      <div class="stat-row">
+        <span class="sn">1</span><span class="sl">Internship Done</span>
+      </div>
+      <div class="stat-row">
+        <span class="sn">∞</span><span class="sl">Drive to Build</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SKILLS -->
+<div class="panel" id="p-skills">
+  <div class="sec-num fade-up">02 — SKILLS</div>
+  <div class="s-title fade-up">Tech <span>Stack</span></div>
+  <div class="sk-grid fade-up">
+    <div class="sk-item">
+      <div class="sk-icon">🐍</div>
+      <div class="sk-name">Python / Django</div>
+      <div class="sk-tags"><span class="sk-tag">Django</span><span class="sk-tag">DRF</span><span class="sk-tag">Python</span></div>
+      <div class="sk-bar"><div class="sk-fill" data-w="90"></div></div>
+    </div>
+    <div class="sk-item">
+      <div class="sk-icon">🗄️</div>
+      <div class="sk-name">Database</div>
+      <div class="sk-tags"><span class="sk-tag">MySQL</span><span class="sk-tag">ORM</span><span class="sk-tag">SQL</span></div>
+      <div class="sk-bar"><div class="sk-fill" data-w="80"></div></div>
+    </div>
+    <div class="sk-item">
+      <div class="sk-icon">🤖</div>
+      <div class="sk-name">AI Integration</div>
+      <div class="sk-tags"><span class="sk-tag">OpenRouter</span><span class="sk-tag">Prompts</span></div>
+      <div class="sk-bar"><div class="sk-fill" data-w="75"></div></div>
+    </div>
+    <div class="sk-item">
+      <div class="sk-icon">🔐</div>
+      <div class="sk-name">Auth & Security</div>
+      <div class="sk-tags"><span class="sk-tag">JWT</span><span class="sk-tag">RBAC</span><span class="sk-tag">Sessions</span></div>
+      <div class="sk-bar"><div class="sk-fill" data-w="85"></div></div>
+    </div>
+    <div class="sk-item">
+      <div class="sk-icon">🚀</div>
+      <div class="sk-name">Deployment</div>
+      <div class="sk-tags"><span class="sk-tag">Render</span><span class="sk-tag">Git</span><span class="sk-tag">WhiteNoise</span></div>
+      <div class="sk-bar"><div class="sk-fill" data-w="70"></div></div>
+    </div>
+    <div class="sk-item">
+      <div class="sk-icon">💳</div>
+      <div class="sk-name">Payments</div>
+      <div class="sk-tags"><span class="sk-tag">Razorpay</span><span class="sk-tag">Webhooks</span></div>
+      <div class="sk-bar"><div class="sk-fill" data-w="72"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- PROJECTS -->
+<div class="panel" id="p-projects">
+  <div class="sec-num fade-up">03 — PROJECTS</div>
+  <div class="s-title fade-up">Selected <span>Work</span></div>
+  <div class="pj-grid fade-up">
+    <div class="pj-card">
+      <div class="pj-n">01 · AI SYSTEM</div>
+      <div class="pj-name">HireSense</div>
+      <p class="pj-desc">AI-powered ATS resume screener with intelligent job-matching scoring algorithms and full REST API.</p>
+      <div class="pj-stack"><span class="pj-t">Django</span><span class="pj-t">DRF</span><span class="pj-t">AI</span><span class="pj-t">Render</span></div>
+      <div class="pj-links">
+        <a href="#" class="pj-link" onclick="alert('Add live URL');return false;">↗ Live</a>
+        <a href="#" class="pj-link" onclick="alert('Add GitHub URL');return false;">◈ Code</a>
+      </div>
+    </div>
+    <div class="pj-card">
+      <div class="pj-n">02 · AI TOOL</div>
+      <div class="pj-name">AI Interview Simulator</div>
+      <p class="pj-desc">Generates personalized interview questions from resumes. OpenRouter evaluation with structured feedback analytics.</p>
+      <div class="pj-stack"><span class="pj-t">Django</span><span class="pj-t">OpenRouter</span><span class="pj-t">DRF</span></div>
+      <div class="pj-links">
+        <a href="#" class="pj-link" onclick="alert('Add live URL');return false;">↗ Live</a>
+        <a href="#" class="pj-link" onclick="alert('Add GitHub URL');return false;">◈ Code</a>
+      </div>
+    </div>
+    <div class="pj-card">
+      <div class="pj-n">03 · FINTECH</div>
+      <div class="pj-name">CoreV Trading Platform</div>
+      <p class="pj-desc">Full trading course platform — auth, enrollment, Razorpay payments. End-to-end from registration to paid content.</p>
+      <div class="pj-stack"><span class="pj-t">Django</span><span class="pj-t">Razorpay</span><span class="pj-t">MySQL</span></div>
+      <div class="pj-links">
+        <a href="#" class="pj-link" onclick="alert('Add live URL');return false;">↗ Live</a>
+        <a href="#" class="pj-link" onclick="alert('Add GitHub URL');return false;">◈ Code</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CONTACT -->
+<div class="panel" id="p-contact">
+  <div class="ct-inner">
+    <div class="sec-num fade-up">04 — CONTACT</div>
+    <div class="s-title fade-up">Let's <span>Build</span></div>
+    <div class="big-email fade-up"><a href="mailto:yash00gandhi@gmail.com">yash00gandhi@gmail.com</a></div>
+    <div class="ct-row fade-up">
+      <a href="tel:+917238002289" class="ct-card">
+        <div class="ct-l">Phone</div>
+        <div class="ct-v">+91 72380 02289</div>
+      </a>
+      <a href="https://github.com" target="_blank" class="ct-card">
+        <div class="ct-l">GitHub</div>
+        <div class="ct-v">View Code →</div>
+      </a>
+      <a href="https://linkedin.com" target="_blank" class="ct-card">
+        <div class="ct-l">LinkedIn</div>
+        <div class="ct-v">Connect →</div>
+      </a>
+    </div>
+    <button class="send-btn fade-up" onclick="window.location='mailto:yash00gandhi@gmail.com'">Send Message ↗</button>
+  </div>
+</div>
+
+<!-- SCROLL HINT -->
+<div class="scroll-hint">
+  <span>Scroll</span>
+  <div class="scroll-line"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+// ── THREE.JS SCENE ──────────────────────────────────────────────
+const renderer = new THREE.WebGLRenderer({canvas:document.getElementById('c'),antialias:true,alpha:true});
+renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+renderer.setSize(window.innerWidth,window.innerHeight);
+renderer.setClearColor(0x000000,1);
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(60,window.innerWidth/window.innerHeight,0.1,1000);
+camera.position.set(0,0,5);
+
+// FOG
+scene.fog = new THREE.FogExp2(0x000000,0.035);
+
+// LIGHTING
+const ambLight = new THREE.AmbientLight(0xffffff,0.3);
+scene.add(ambLight);
+const pt1 = new THREE.PointLight(0x6644ff,4,20);
+pt1.position.set(-4,3,2);
+scene.add(pt1);
+const pt2 = new THREE.PointLight(0x0088ff,3,20);
+pt2.position.set(4,-3,2);
+scene.add(pt2);
+const pt3 = new THREE.PointLight(0xff4466,2,15);
+pt3.position.set(0,0,-5);
+scene.add(pt3);
+
+// ── PARTICLES FIELD ──
+const pCount = 3000;
+const pGeo = new THREE.BufferGeometry();
+const pPos = new Float32Array(pCount*3);
+const pVel = new Float32Array(pCount*3);
+const pSize = new Float32Array(pCount);
+for(let i=0;i<pCount;i++){
+  pPos[i*3]   = (Math.random()-0.5)*30;
+  pPos[i*3+1] = (Math.random()-0.5)*30;
+  pPos[i*3+2] = (Math.random()-0.5)*30;
+  pVel[i*3]   = (Math.random()-0.5)*0.004;
+  pVel[i*3+1] = (Math.random()-0.5)*0.004;
+  pVel[i*3+2] = (Math.random()-0.5)*0.004;
+  pSize[i] = Math.random()*2+0.5;
+}
+pGeo.setAttribute('position',new THREE.BufferAttribute(pPos,3));
+pGeo.setAttribute('size',new THREE.BufferAttribute(pSize,1));
+const pMat = new THREE.PointsMaterial({color:0xffffff,size:0.06,transparent:true,opacity:0.5,sizeAttenuation:true});
+const pts = new THREE.Points(pGeo,pMat);
+scene.add(pts);
+
+// ── FLOATING GEOMETRIC SHAPES ──
+const shapes = [];
+const geos = [
+  new THREE.OctahedronGeometry(0.6,0),
+  new THREE.IcosahedronGeometry(0.5,0),
+  new THREE.TetrahedronGeometry(0.65,0),
+  new THREE.OctahedronGeometry(0.4,0),
+  new THREE.IcosahedronGeometry(0.35,0),
+  new THREE.TetrahedronGeometry(0.45,0),
+];
+const wireMat = new THREE.MeshStandardMaterial({color:0xffffff,wireframe:true,transparent:true,opacity:0.15});
+const solidMat = new THREE.MeshStandardMaterial({color:0x1a1a2e,metalness:0.9,roughness:0.1,transparent:true,opacity:0.8});
+
+const positions3d = [[-3.5,1.5,-1],[ 3.2,2,-1.5],[-2.8,-2,-0.5],[3,-1.5,-2],[-1.2,2.8,-3],[1.8,-2.5,-2]];
+geos.forEach((g,i)=>{
+  const solid = new THREE.Mesh(g,solidMat.clone());
+  const wire  = new THREE.Mesh(g,wireMat.clone());
+  solid.position.set(...positions3d[i]);
+  wire.position.set(...positions3d[i]);
+  const s = 0.7+Math.random()*0.6;
+  solid.scale.setScalar(s); wire.scale.setScalar(s);
+  solid.rotation.set(Math.random()*Math.PI,Math.random()*Math.PI,Math.random()*Math.PI);
+  wire.rotation.copy(solid.rotation);
+  scene.add(solid); scene.add(wire);
+  shapes.push({solid,wire,
+    rx:(Math.random()-0.5)*0.006,
+    ry:(Math.random()-0.5)*0.008,
+    rz:(Math.random()-0.5)*0.004,
+    floatSpeed:0.3+Math.random()*0.4,
+    floatAmp:0.12+Math.random()*0.1,
+    initY:positions3d[i][1],
+    phase:Math.random()*Math.PI*2
+  });
+});
+
+// ── CENTRAL DNA / HELIX ──
+const helixGroup = new THREE.Group();
+scene.add(helixGroup);
+const helixPoints1=[], helixPoints2=[];
+const helixBalls=[];
+for(let i=0;i<60;i++){
+  const t = i/60;
+  const angle = t*Math.PI*6;
+  const y = (t-0.5)*4;
+  const r = 0.7;
+  const x1=Math.cos(angle)*r, z1=Math.sin(angle)*r;
+  const x2=Math.cos(angle+Math.PI)*r, z2=Math.sin(angle+Math.PI)*r;
+  helixPoints1.push(new THREE.Vector3(x1,y,z1));
+  helixPoints2.push(new THREE.Vector3(x2,y,z2));
+  if(i%5===0){
+    const bg = new THREE.SphereGeometry(0.05,8,8);
+    const bm1 = new THREE.MeshStandardMaterial({color:0xffffff,emissive:0xaaaaff,emissiveIntensity:1});
+    const bm2 = new THREE.MeshStandardMaterial({color:0xffffff,emissive:0xffaaaa,emissiveIntensity:1});
+    const b1=new THREE.Mesh(bg,bm1), b2=new THREE.Mesh(bg,bm2);
+    b1.position.set(x1,y,z1); b2.position.set(x2,y,z2);
+    helixGroup.add(b1); helixGroup.add(b2);
+    // Connector
+    const mid = new THREE.Vector3((x1+x2)/2,y,(z1+z2)/2);
+    const len = new THREE.Vector3(x1,y,z1).distanceTo(new THREE.Vector3(x2,y,z2));
+    const cg = new THREE.CylinderGeometry(0.012,0.012,len,4);
+    const cm = new THREE.MeshStandardMaterial({color:0xffffff,transparent:true,opacity:0.15});
+    const cyl = new THREE.Mesh(cg,cm);
+    cyl.position.set(mid.x,mid.y,mid.z);
+    cyl.lookAt(new THREE.Vector3(x1,y,z1));
+    cyl.rotateX(Math.PI/2);
+    helixGroup.add(cyl);
+    helixBalls.push(b1,b2);
+  }
+}
+const curve1 = new THREE.CatmullRomCurve3(helixPoints1);
+const curve2 = new THREE.CatmullRomCurve3(helixPoints2);
+const tube1 = new THREE.Mesh(new THREE.TubeGeometry(curve1,120,0.018,6,false),new THREE.MeshStandardMaterial({color:0x8888ff,emissive:0x4444aa,emissiveIntensity:0.5,transparent:true,opacity:0.8}));
+const tube2 = new THREE.Mesh(new THREE.TubeGeometry(curve2,120,0.018,6,false),new THREE.MeshStandardMaterial({color:0xff8888,emissive:0xaa4444,emissiveIntensity:0.5,transparent:true,opacity:0.8}));
+helixGroup.add(tube1,tube2);
+helixGroup.position.set(0,0,-1);
+
+// ── GRID FLOOR ──
+const gridHelper = new THREE.GridHelper(40,40,0x111133,0x0a0a1a);
+gridHelper.position.y = -4;
+scene.add(gridHelper);
+
+// ── MOUSE & SCROLL ──
+let mx=0,my=0,cx2=0,cy2=0;
+let targetSection=0,currentSection=0;
+const totalSections=5;
+let isScrolling=false;
+document.addEventListener('mousemove',e=>{
+  mx=(e.clientX/window.innerWidth-0.5)*2;
+  my=-(e.clientY/window.innerHeight-0.5)*2;
+  document.getElementById('cur').style.left=e.clientX+'px';
+  document.getElementById('cur').style.top=e.clientY+'px';
+  cx2+=(e.clientX-cx2)*0.08; cy2+=(e.clientY-cy2)*0.08;
+  document.getElementById('cur2').style.left=cx2+'px';
+  document.getElementById('cur2').style.top=cy2+'px';
+});
+function animCur(){
+  cx2+=(mx*window.innerWidth/2+window.innerWidth/2-cx2)*0.08;
+  cy2+=(-my*window.innerHeight/2+window.innerHeight/2-cy2)*0.08;
+  document.getElementById('cur2').style.left=cx2+'px';
+  document.getElementById('cur2').style.top=cy2+'px';
+  requestAnimationFrame(animCur);
+}animCur();
+
+// SCROLL
+let scrollCooldown=false;
+function goTo(n){
+  if(n<0||n>=totalSections)return;
+  const panels=['p-home','p-about','p-skills','p-projects','p-contact'];
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById(panels[n]).classList.add('active');
+  document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('on',i===n));
+  document.getElementById('sec-ind').textContent=String(n+1).padStart(2,'0')+' / 0'+totalSections;
+  document.getElementById('progress').style.width=(n/(totalSections-1)*100)+'%';
+  document.querySelector('.scroll-hint').style.opacity=n===0?'1':'0';
+  targetSection=n;
+  currentSection=n;
+  // Skill bars
+  if(n===2){
+    setTimeout(()=>{document.querySelectorAll('.sk-fill').forEach(b=>b.style.width=b.dataset.w+'%');},400);
+  } else {
+    document.querySelectorAll('.sk-fill').forEach(b=>b.style.width='0');
+  }
+}
+window.goTo=goTo;
+window.addEventListener('wheel',e=>{
+  if(scrollCooldown)return;
+  scrollCooldown=true;
+  goTo(currentSection+(e.deltaY>0?1:-1));
+  setTimeout(()=>scrollCooldown=false,900);
+},{passive:true});
+let touchY=0;
+window.addEventListener('touchstart',e=>touchY=e.touches[0].clientY,{passive:true});
+window.addEventListener('touchend',e=>{
+  const dy=touchY-e.changedTouches[0].clientY;
+  if(Math.abs(dy)<40)return;
+  if(scrollCooldown)return;
+  scrollCooldown=true;
+  goTo(currentSection+(dy>0?1:-1));
+  setTimeout(()=>scrollCooldown=false,900);
+},{passive:true});
+
+// ── SECTION SPECIFIC 3D STATES ──
+const sectionCamPos = [
+  {x:0,y:0,z:5},       // home
+  {x:-1,y:0.5,z:4.5},  // about
+  {x:1,y:-0.5,z:4.5},  // skills
+  {x:0,y:-1,z:5},      // projects
+  {x:0,y:0,z:4},       // contact
+];
+const helixVis=[1,0.8,0.3,0.1,1];
+
+// ── CLOCK ──
+const clock = new THREE.Clock();
+let time=0;
+
+// ── ANIMATE ──
+function animate(){
+  requestAnimationFrame(animate);
+  time = clock.getElapsedTime();
+
+  // Smooth camera
+  const tp=sectionCamPos[currentSection];
+  camera.position.x += (tp.x + mx*0.3 - camera.position.x)*0.05;
+  camera.position.y += (tp.y + my*0.2 - camera.position.y)*0.05;
+  camera.position.z += (tp.z - camera.position.z)*0.05;
+  camera.lookAt(0,0,0);
+
+  // Lights pulse
+  pt1.position.x = Math.sin(time*0.4)*5-2;
+  pt1.position.y = Math.cos(time*0.3)*3+2;
+  pt2.position.x = Math.cos(time*0.35)*5+2;
+  pt2.position.y = Math.sin(time*0.4)*3-2;
+  pt3.intensity = 1.5+Math.sin(time*2)*0.5;
+
+  // Helix rotate & float
+  helixGroup.rotation.y = time*0.3 + mx*0.5;
+  helixGroup.rotation.x = my*0.2;
+  helixGroup.position.y = Math.sin(time*0.4)*0.2;
+  const tv=helixVis[currentSection];
+  helixGroup.children.forEach(c=>{if(c.material)c.material.opacity=c.material.opacity+(tv*0.8-c.material.opacity)*0.05;});
+
+  // Floating shapes
+  shapes.forEach((s,i)=>{
+    s.solid.rotation.x += s.rx; s.solid.rotation.y += s.ry; s.solid.rotation.z += s.rz;
+    s.wire.rotation.copy(s.solid.rotation);
+    const fy = s.initY + Math.sin(time*s.floatSpeed+s.phase)*s.floatAmp;
+    s.solid.position.y = fy; s.wire.position.y = fy;
+    // Mouse parallax
+    s.solid.position.x = positions3d[i][0] + mx*(0.15+i*0.03);
+    s.wire.position.x = s.solid.position.x;
+    s.solid.position.z = positions3d[i][2] + my*0.1;
+    s.wire.position.z = s.solid.position.z;
+  });
+
+  // Particles drift
+  for(let i=0;i<pCount;i++){
+    pPos[i*3]   += pVel[i*3];
+    pPos[i*3+1] += pVel[i*3+1];
+    pPos[i*3+2] += pVel[i*3+2];
+    if(Math.abs(pPos[i*3])>15)pVel[i*3]*=-1;
+    if(Math.abs(pPos[i*3+1])>15)pVel[i*3+1]*=-1;
+    if(Math.abs(pPos[i*3+2])>15)pVel[i*3+2]*=-1;
+  }
+  pGeo.attributes.position.needsUpdate=true;
+  pts.rotation.y = time*0.02;
+
+  // Grid float
+  gridHelper.position.y = -4 + Math.sin(time*0.2)*0.3;
+
+  // Helix ball pulse
+  helixBalls.forEach((b,i)=>{
+    b.scale.setScalar(1+Math.sin(time*2+i*0.3)*0.15);
+  });
+
+  renderer.render(scene,camera);
+}
+animate();
+
+window.addEventListener('resize',()=>{
+  camera.aspect=window.innerWidth/window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth,window.innerHeight);
+});
+
+// Hover cursor scale
+document.querySelectorAll('button,a,.pj-card,.sk-item,.ct-card,.dot').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{document.getElementById('cur').style.transform='translate(-50%,-50%) scale(3)';});
+  el.addEventListener('mouseleave',()=>{document.getElementById('cur').style.transform='translate(-50%,-50%) scale(1)';});
+});
+</script>
+</body>
+</html>
